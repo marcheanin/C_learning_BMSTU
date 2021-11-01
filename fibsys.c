@@ -5,6 +5,7 @@ void fib_sys(long long x, long long s[], long long fib[]){
         if (fib[i] <= x && s[i + 1] != 1 && s[i - 1] != 1){
             s[i] = 1;
             fib_sys(x - fib[i], s, fib);
+            //printf("%lld\n", fib[i]);
             return;
         }
     }
@@ -22,13 +23,13 @@ int main(){
 //    for (int i = 0; i < 90; i++){
 //        printf("%lld ", fib[i]);
 //    }
-    printf("\n");
+    //printf("\n");
     long long s[100];
     for (int i = 0; i < 100; i++){
         s[i] = 0;
     }
     fib_sys(x, s, fib);
-    for (int i = 0; i < 86; i++){
+    for (int i = 0; i < 90; i++){
         printf("%lld", s[i]);
     }
     return 0;

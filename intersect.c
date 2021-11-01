@@ -4,11 +4,12 @@
 int main(){
     long a = 0, b = 0;
     int n, m, x;
-    scanf("%d%d", &n, &m);
+    scanf("%d", &n);
     for (int i = 0; i < n; i++){
         scanf("%d", &x);
         a += pow(2, x);
     }
+    scanf("%d", &m);
     for (int i = 0; i < m; i++){
         scanf("%d", &x);
         b += pow(2, x);
