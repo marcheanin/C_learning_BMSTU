@@ -6,7 +6,7 @@ int main(){
     scanf("%ld", &x);
     long n = abs(x);
     x = abs(x);
-    for (int i = 2; i <= n; i++){
+    for (long i = 2; i <= n; i++){
         if (i == x){
             printf("%ld", x);
             return 0;
