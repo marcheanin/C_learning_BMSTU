@@ -3,9 +3,9 @@
 
 void revarray(void *base, size_t nel, size_t width){
     for (void *i = base, *j =  base + (nel - 1) * width; i < j; i += width, j -= width){
-        int x = *(char*)i;
-        *(char*)i = *(char*)j;
-        *(char*)j = x;
+        int x = *(int*)i;
+        *(int*)i = *(int*)j;
+        *(int*)j = x;
     }
 }
 int main(){
