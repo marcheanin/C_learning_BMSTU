@@ -74,12 +74,16 @@ caacccca
 accaacccc
 cabaccaac
 
+13
+
 5
 bba
 babccaab
 abccaabac
 aabacacab
 acabaab
+
+18
 
 10
 acbabcaac
@@ -92,4 +96,6 @@ bbbccbabca
 accccabba
 cbaca
 accaabaaab
+
+60
 */
