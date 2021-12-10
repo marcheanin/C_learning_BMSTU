@@ -15,6 +15,6 @@ int wcount(char *s){
 int main(){
     char s[100];
     gets(s);
-    printf("%s\n", s);
+    //printf("%s\n", s);
     printf("%d", wcount(s));
 }
