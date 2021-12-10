@@ -1,23 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int res = 0;
+long long res = 0;
 
-void count (int *arr, int n, int k, int sum) {
+void count (long long *arr, long long n, long long k, long long sum) {
     if (sum > 0 && !(sum & (sum - 1)))
         res++;
     if (k >= n)
         return;
-    for (int i = k; i < n; i++) {
+    for (long long i = k; i < n; i++) {
         count(arr, n, i + 1, sum + arr[i]);
     }
 }
 
 int main() {
-    int n;
+    long long n;
     scanf("%d", &n);
-    int *arr = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++)
+    long long *arr = malloc(n * sizeof(long long));
+    for (long long i = 0; i < n; i++)
         scanf("%d", &arr[i]);
 
     count(arr, n, 0, 0);
