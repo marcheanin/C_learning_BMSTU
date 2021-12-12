@@ -71,6 +71,7 @@ int main(){
     int used[10] = {};
     per(diffs, used, 0, 0, n, -1);
     printf("%ld", res);
+    free(s);
 }
 
 /*
