@@ -14,28 +14,25 @@ char *substring(char *string, int position, int length){
    return p;
 }
 
-char* concat(char a[], char b[]){
+int count_diff(char *a, char *b){
     int n = strlen(a), m = strlen(b);
-    if (n == 0) return b;
-    if (m == 0) return a;
-    int pos = -1;
+    if (m == 0 || n == 0) return m;
+    int len = 0;
     for (int i = n - 1, j = 0; i >= 0, j < m; i--, j++){
-        if (strcmp(substring(a, i, n - i), substring(b, 0, j + 1)) == 0){
-            pos = j;
+        if(strcmp(substring(a, i, n - i), substring(b, 0, j + 1)) == 0){
+            len = j + 1;
         }
     }
-    char* t = (char*)malloc(sizeof(char) * n);
-    strcpy(t, a);
-    return strcat(t, substring(b, pos + 1, m - (pos + 1)));
+    return m - len;
 }
 
-char mux[1000] = "";
+long res = 0;
 
-void per(char **s, int used[], char res[], int k, int n){
+void per(int diffs[10][10], int used[], long cur, int k, int n, int last){
     if (k >= n){
         //printf("%s\n", res);
-        if (strcmp(mux, "") == 0 || strlen(res) < strlen(mux)){
-            strcpy(mux, res);
+        if (res == 0 || res > cur){
+            res = cur;
         }
         return;
     }
@@ -43,12 +40,14 @@ void per(char **s, int used[], char res[], int k, int n){
     for (int i = 0; i < n; i++){
         if (!used[i]){
             used[i] = 1;
-            per(s, used, concat(res, s[i]), k + 1, n);
+            if (last == -1) per(diffs, used, diffs[i][i], k + 1, n, i);
+            else per(diffs, used, cur + diffs[last][i], k + 1, n, i);
             //printf("%s\n", res);
             used[i] = 0;
         }
     }
 }
+
 
 int main(){
     int n;
@@ -59,13 +58,19 @@ int main(){
         s[i] = (char*)malloc(100 * sizeof(char));
         scanf("%s", s[i]);
     }
+    int diffs[10][10];
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            if (i != j){
+                diffs[i][j] = count_diff(s[i], s[j]);
+            }
+            else diffs[i][j] = strlen(s[i]);
+        }
+    }
 
     int used[10] = {};
-    char* res = "";
-    //printf("%s\n", concat(s[0], s[1]));
-    per(s, used, res, 0, n);
-    //printf("%s\n", mux);
-    printf("%d", strlen(mux));
+    per(diffs, used, 0, 0, n, -1);
+    printf("%ld", res);
 }
 
 /*
