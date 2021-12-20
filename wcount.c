@@ -17,4 +17,3 @@ int main(){
     gets(s);
     //printf("%s\n", s);
     printf("%d", wcount(s));
-}

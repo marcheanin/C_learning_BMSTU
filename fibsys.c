@@ -14,10 +14,14 @@ void fib_sys(long long x, long long s[], long long fib[]){
 int main(){
     long long x;
     scanf("%lld", &x);
+    if (x == 0){
+        printf("%d", 0);
+        return 0;
+    }
     long long fib[1000];
     fib[0] = 1;
-    fib[1] = 1;
-    for (int i = 2; i < 90; i++){
+    fib[1] = 2;
+    for (int i = 2; i < 89; i++){
         fib[i] = fib[i - 2] + fib[i - 1];
     }
 //    for (int i = 0; i < 90; i++){
@@ -29,8 +33,10 @@ int main(){
         s[i] = 0;
     }
     fib_sys(x, s, fib);
-    for (int i = 0; i < 90; i++){
-        printf("%lld", s[i]);
+    int f = 0;
+    for (int i = 88; i >= 0; i--){
+        if (s[i] == 1) f = 1;
+        if (f == 1) printf("%lld", s[i]);
     }
     return 0;
 }

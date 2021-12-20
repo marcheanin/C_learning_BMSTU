@@ -18,12 +18,10 @@ int main() {
     int n;
     scanf("%d", &n);
     char **s;
-    char c[10];
     s = (char**)malloc(n * sizeof(char*));
     for (int i = 0; i < n; i++){
-        scanf("%s", c);
-        s[i] = (char*)malloc(10 * sizeof(char));
-        strcpy(s[i], c);
+        s[i] = (char*)malloc(200 * sizeof(char));
+        scanf("%s", s[i]);
         //scanf("%s", s[i]);
     }
     char* res = concat(s, n);

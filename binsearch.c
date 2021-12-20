@@ -29,5 +29,5 @@ unsigned long binsearch(unsigned long nel, int (*compare)(unsigned long i)){
 }
 
 int main(){
-    printf("%d", binsearch(10, compare));
+    printf("%ld", binsearch(10, compare));
 }

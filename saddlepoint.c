@@ -7,7 +7,7 @@ int main(){
     scanf("%d%d", &n, &m);
 
     for (int i = 0; i < m; i++) stolbmin[i] = inf;
-    for (int i = 0; i < n; i++) strokmax[i] = 0;
+    for (int i = 0; i < n; i++) strokmax[i] = -inf;
 
     for (int i = 0; i < n; i++){
         for (int j = 0; j < m; j++){
@@ -22,14 +22,6 @@ int main(){
             }
         }
     }
-//    for (int i = 0; i < n; i++){
-//        printf("%d ", strokmax[i]);
-//    }
-//    printf("\n");
-//    for (int i = 0; i < m; i++){
-//        printf("%d ", stolbmin[i]);
-//    }
-//    printf("\n");
     for (int i = 0; i < n; i++){
         for (int j = 0; j < m; j++){
             if (strokmax[i] == stolbmin[j]){
