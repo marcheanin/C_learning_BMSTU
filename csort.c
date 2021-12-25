@@ -47,7 +47,7 @@ void csort(char *src, char *dest){
         sorted[k] = s[i];
         //printf("%d\n", k);
     }
-    dest = (char*)malloc((size_dest + 1) * sizeof(char));
+    //dest = (char*)malloc((size_dest + 1) * sizeof(char));
     strcpy(dest, "");
     for (int i = 0; i < pos; i++){
         strcat(dest, sorted[i]);
@@ -55,9 +55,9 @@ void csort(char *src, char *dest){
             strcat(dest, " ");
         //printf("%s ", sorted[i]);
     }
-    printf("%s", dest);
+    //printf("%s\n", dest);
     //dest[size_dest] = '\0';
-    free(sorted);
+    //free(sorted);
 }
 
 int main(){
@@ -65,6 +65,7 @@ int main(){
     str = (char*)malloc(sizeof(char) * 1000);
     gets(str);
     char *res;
+    res = (char*)malloc(sizeof(char) * 1500);
     csort(str, res);
-    //printf("%s", res);
+    printf("%s", res);
 }
