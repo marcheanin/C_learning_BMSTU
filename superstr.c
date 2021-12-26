@@ -65,7 +65,9 @@ int main(){
                 diffs[i][j] = count_diff(s[i], s[j]);
             }
             else diffs[i][j] = strlen(s[i]);
+            printf("%d ", diffs[i][j]);
         }
+        printf("\n");
     }
 
     int used[10] = {};
