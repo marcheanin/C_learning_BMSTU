@@ -34,6 +34,7 @@ int comp (const void *a1, const void *b1) {
 }
 
 void heapify(void *base, size_t nel, size_t width, int (*compare)(const void *a, const void *b), unsigned long i) {
+    base = (char*)base;
     for(;;) {
         unsigned long l = 2 * i + 1;
         unsigned long r = l + 1;

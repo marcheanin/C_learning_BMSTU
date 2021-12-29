@@ -21,12 +21,12 @@ int compare(char *a, char *b){
 
 void csort(char *src, char *dest){
     char **s;
-    s = (char**)malloc(400 * sizeof(char*));
+    s = (char**)malloc(1000 * sizeof(char*));
     char *sp;
     sp = strtok(src, " ");
     int pos = 0;
     while(sp){
-        s[pos] = (char*)malloc(400 * sizeof(char));
+        s[pos] = (char*)malloc(1000 * sizeof(char));
         s[pos] = sp;
         sp = strtok(NULL, " ");
         pos++;
@@ -57,7 +57,8 @@ void csort(char *src, char *dest){
     }
     //printf("%s\n", dest);
     //dest[size_dest] = '\0';
-    //free(sorted);
+    free(sorted);
+    free(s);
 }
 
 int main(){
@@ -68,4 +69,6 @@ int main(){
     res = (char*)malloc(sizeof(char) * 1500);
     csort(str, res);
     printf("%s", res);
+    free(str);
+    free(res);
 }

@@ -21,7 +21,7 @@ int main(){
     long long fib[1000];
     fib[0] = 1;
     fib[1] = 2;
-    for (int i = 2; i < 89; i++){
+    for (int i = 2; i <= 89; i++){
         fib[i] = fib[i - 2] + fib[i - 1];
     }
 //    for (int i = 0; i < 90; i++){

@@ -3,15 +3,16 @@
 #include <string.h>
 
 char *substring(char *string, int position, int length){
-   char *p;
+   char *p = malloc(length + 1);
    int c;
-   p = malloc(length+1);
+
    for (c = 0; c < length; c++){
       *(p + c) = *(string + position);
       string++;
    }
    *(p + c) = '\0';
    return p;
+
 }
 
 int count_diff(char *a, char *b){
@@ -19,9 +20,13 @@ int count_diff(char *a, char *b){
     if (m == 0 || n == 0) return m;
     int len = 0;
     for (int i = n - 1, j = 0; i >= 0, j < m; i--, j++){
-        if(strcmp(substring(a, i, n - i), substring(b, 0, j + 1)) == 0){
+            char *left = substring(a, i, n - i);
+            char *right = substring(b, 0, j + 1);
+        if(strcmp(left, right) == 0){
             len = j + 1;
         }
+        free(left);
+        free(right);
     }
     return m - len;
 }
@@ -55,7 +60,7 @@ int main(){
     char **s;
     s = (char**)malloc(n * sizeof(char*));
     for (int i = 0; i < n; i++){
-        s[i] = (char*)malloc(100 * sizeof(char));
+        s[i] = (char*)malloc(700 * sizeof(char));
         scanf("%s", s[i]);
     }
     int diffs[10][10];
@@ -65,14 +70,18 @@ int main(){
                 diffs[i][j] = count_diff(s[i], s[j]);
             }
             else diffs[i][j] = strlen(s[i]);
-            printf("%d ", diffs[i][j]);
+            //printf("%d ", diffs[i][j]);
         }
-        printf("\n");
+        //printf("\n");
     }
 
     int used[10] = {};
     per(diffs, used, 0, 0, n, -1);
     printf("%ld", res);
+
+    for (int i = 0; i < n; i++){
+        free(s[i]);
+    }
     free(s);
 }
 

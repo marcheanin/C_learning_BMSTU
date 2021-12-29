@@ -5,41 +5,41 @@
 
 long long n, t[4000000];
 
-int min(int a, int b){
+long long min(long long a, long long b){
     if (a < b) return a;
     return b;
 }
 
-int max(int a, int b){
+long long max(long long a, long long b){
     if (a > b) return a;
     return b;
 }
 
-void build (int a[], int v, int tl, int tr) {
+void build (long long a[], long long v, long long tl, long long tr) {
 	if (tl == tr)
 		t[v] = a[tl];
 	else {
-		int tm = (tl + tr) / 2;
+		long long tm = (tl + tr) / 2;
 		build (a, v*2, tl, tm);
 		build (a, v*2+1, tm+1, tr);
 		t[v] = max(t[v*2], t[v*2+1]);
 	}
 }
 
-int get_max(int v, int tl, int tr, int l, int r) {
+long long get_max(long long v, long long tl, long long tr, long long l, long long r) {
 	if (l > r)
-		return 0;
+		return -1e9;
 	if (l == tl && r == tr)
 		return t[v];
-	int tm = (tl + tr) / 2;
+	long long tm = (tl + tr) / 2;
 	return max(get_max(v*2, tl, tm, l, min(r,tm)), get_max(v*2+1, tm+1, tr, max(l,tm+1), r));
 }
 
-void update (int v, int tl, int tr, int pos, int new_val) {
+void update (long long v, long long tl, long long tr, long long pos, long long new_val) {
 	if (tl == tr)
 		t[v] = new_val;
 	else {
-		int tm = (tl + tr) / 2;
+		long long tm = (tl + tr) / 2;
 		if (pos <= tm)
 			update (v * 2, tl, tm, pos, new_val);
 		else
@@ -51,24 +51,25 @@ void update (int v, int tl, int tr, int pos, int new_val) {
 
 int main(){
     scanf("%lld", &n);
-    int* s = (int*)malloc(sizeof(int) * n);
+    long long* s = (long long*)malloc(sizeof(long long) * n);
     for (int i = 0; i < n; i++){
-        scanf("%d", &s[i]);
+        scanf("%lld", &s[i]);
     }
     build(s, 1, 0, n - 1);
-    int m;
-    scanf("%d", &m);
+    long long m;
+    scanf("%lld", &m);
     char a[5];
-    int x, y;
+    long long x, y;
     for (int j = 0; j < m; j++){
-        scanf("%s%d%d", &a, &x, &y);
-        //printf("%s %d %d\n", a, x, y);
-        if (strcmp(a, "MAX") == 0){
-            printf("%d\n", get_max(1, 0, n - 1, x, y));
+        scanf("%s%lld%lld", &a, &x, &y);
+        //prlong longf("%s %d %d\n", a, x, y);
+        if (strcmp(a, "m") == 0){
+            printf("%lld ", get_max(1, 0, n - 1, x - 1, y - 1));
         }
         else{
-            update(1, 0, n - 1, x, y);
+            update(1, 0, n - 1, x - 1, y);
         }
     }
+    free(s);
     return 0;
 }

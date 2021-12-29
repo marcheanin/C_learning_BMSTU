@@ -22,5 +22,5 @@ int main(){
     s = (char*)malloc(sizeof(char) * 1000000);
     scanf("%s", s);
     dsort(s);
-    printf(s);
+    printf("%s", s);
 }
