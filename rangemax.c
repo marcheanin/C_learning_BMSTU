@@ -63,11 +63,11 @@ int main(){
     for (int j = 0; j < m; j++){
         scanf("%s%lld%lld", &a, &x, &y);
         //prlong longf("%s %d %d\n", a, x, y);
-        if (strcmp(a, "m") == 0){
-            printf("%lld ", get_max(1, 0, n - 1, x - 1, y - 1));
+        if (strcmp(a, "MAX") == 0){
+            printf("%lld\n", get_max(1, 0, n - 1, x, y));
         }
         else{
-            update(1, 0, n - 1, x - 1, y);
+            update(1, 0, n - 1, x, y);
         }
     }
     free(s);

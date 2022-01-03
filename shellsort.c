@@ -23,33 +23,33 @@ void shellsort(unsigned long nel,
         void (*swap)(unsigned long i, unsigned long j))
 {
     if (nel == 1) return;
-    int *d = (int*)malloc(sizeof(int) * nel);
-    d[0] = 1, d[1] = 1;
-    int k = 2;
-    while(d[k - 1] + d[k - 2] < nel){
-        d[k] = d[k - 1] + d[k - 2];
-        k++;
+    int a = 1, b = 1, size_d = 0;
+    for (;b < nel; size_d++){
+        int c = b;
+        b += a;
+        a = c;
     }
-    for (int i = k - 1; i >= 0; i--){
-        for (int j = 0; j < nel - d[i]; j++){
-            int pos = j;
-            while(pos >= 0 && compare(j, j + d[i]) == 1){
-                swap(j, j + d[i]);
-                pos--;
-            }
-        }
+    int *d = (int*)malloc(sizeof(int) * size_d);
+    a = 1, b = 1;
+    for (int i = 0; b < nel; i++) {
+        int c = b;
+        b = a + b;
+        a = c;
+        d[i] = a;
     }
-//    for (int i = 1; i < nel; i++){
-//        for (int j = i; j >= 1 && compare(j - 1, j) == 1; j--){
-//            swap(j - 1, j);
-//        }
-//    }
+    for (int k = size_d - 1; k >= 0; k--) {
+        //printf("%d\n", d);
+        for (int i = 0; i < nel; i++)
+            for (int j = i - d[k]; j >= 0 && compare(j, j + d[k]) == 1; j -= d[k])
+                swap(j, j + d[k]);
+    }
     free(d);
 }
 
 int main(){
     int n;
     scanf("%d", &n);
+    if (n == 0) return 0;
     s = (int*)malloc(sizeof(int) * n);
     for (int i = 0; i < n; i++){
         scanf("%d", &s[i]);
@@ -60,3 +60,37 @@ int main(){
     }
     free(s);
 }
+
+/*
+30
+2
+3
+5
+32
+23
+3
+33
+3
+2
+3
+32
+34
+3
+2
+3
+32
+32
+2
+2
+2
+24
+2
+3
+434
+53
+2
+2
+34
+33
+3
+*/

@@ -31,10 +31,10 @@ int main(int argc, char **argv){
     int* prefix = prefix_function(s);
     for (int i = 0; i < strlen(s); i++){
         if (prefix[i] == strlen(a)){
-            printf("%d ", i - 2 * strlen(a));
+            printf("%d ", (int)(i - 2 * strlen(a)));
         }
     }
 
-    free(str), free(a), free(s), free(prefix);
+    free(s), free(prefix);
     return 0;
 }
