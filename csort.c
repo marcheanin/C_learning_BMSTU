@@ -57,7 +57,13 @@ void csort(char *src, char *dest){
     }
     //printf("%s\n", dest);
     //dest[size_dest] = '\0';
+    for (int i = 0; i < pos; i++){
+        free(sorted[i]);
+    }
     free(sorted);
+    for (int i = 0; i < 1000; i++){
+        free(s[i]);
+    }
     free(s);
 }
 

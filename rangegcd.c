@@ -1,103 +1,84 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
-int gcd(int n1, int n2)
-{
-	n1 = abs(n1);
-	n2 = abs(n2);
+//2 в степени j === 1 и j штук 0 :   2 в 10 == 10000000000 в 2 с/с
+//Поэтому в 2 какой степени j === (1 << j)
 
-	int a, b;
-
-	if (n1 > n2)
-	{
-		a = n1;
-		b = n2;
-	}
-	else
-	{
-		a = n2;
-		b = n1;
-	}
-
-	if (!b)
-		return a;
-
-	int r1 = a % b, r2 = b;
-
-	while (r1)
-	{
-		a = b;
-		b = r2 = r1;
-		r1 = a % b;
-	}
-
-	return r2;
+int Gcd(int a, int b){
+	a = (int)labs(a);
+	b = (int)labs(b);
+	if (b == 0)
+		return (int)labs(a);
+	return Gcd(b, a % b);
 }
 
-int *arr;
-int **table;
-
-int** SparseTableInit(size_t n)
-{
-	int j = 0, m = (int)log2(n) + 1;
-	size_t i = 0;
-
-	table = (int **)calloc(1, n * sizeof(int *) + n * m * sizeof(int));
-	table[0] = (int *)(table + n);
-
-	for (i = 1; i < n; i++)
-		table[i] = table[i - 1] + m;
-
-	for (i = 0; i < n; i++)
-		table[i][0] = arr[i];
-
-	for (j = 1; j < m; ++j)
-	{
-		for (i = 0; i <= (n - (1 << j)); i++)
-			table[i][j] = gcd(table[i][j - 1], table[i + (1 << (j - 1))][j - 1]);
+void Sparse_Table_build(int *arr, int *lg, int n, int **ST){
+	int m = lg[n] + 1;
+	int i = 0;
+	while (i < n){
+		ST[i][0] = arr[i];
+		i++;
 	}
-
-	return table;
+	int j = 1;
+	while (j < m){
+		i = 0;
+		while(i <= n - (1 << j)){
+			ST[i][j] = Gcd (ST[i][j-1], ST[i + (1 << (j-1))][j-1]);
+			i++;
+		}
+		j++;
+	}
 }
 
-int SparseTableQuery(int l, int r)
-{
-	int m = (int)log2(r - l + 1);
-
-	return gcd(table[l][m], table[r - (1 << m) + 1][m]);
+void Computer_Logarithms(int m, int* lg){
+	int i = 1, j = 0;
+	while (i < m){
+		while(j < (1 << i)){
+			lg[j] = i - 1;
+			j++;
+		}
+		i++;
+	}
 }
 
-int main(int argc, char **argv)
-{
-	size_t n = 0, i = 0;
-	scanf("%u", &n); // Количество элементов.
+int Sparce_Table_Query(int l, int r,int *lg, int **ST){
+	int j = lg[r - l + 1];
+	return Gcd (ST[l][j], ST[r - (1 << j) + 1][j]);
+}
 
-	arr = (int*)malloc(n * sizeof(int));
+int main(int argc, const char * argv[]) {
+	int length, m, l = 0 , r = 0;
 
-	for (i = 0; i < n; i++)
-		scanf("%d", arr + i);
+	scanf("%d", &length);
+	int *arr=(int*)malloc(length*sizeof(int));
+	for (int i = 0; i < length; i++)
+		scanf("%d", &arr[i]);
 
-	SparseTableInit(n);
-	SparseTableInit(n);
+	int *lg=(int*)malloc(2000000*sizeof(int));
+	Computer_Logarithms(20, lg);
+	int mm = lg[length] + 1;
 
-	int l = 0, r = 0;
-	size_t m = 0;
-	scanf("%u", &m); // Количество запросов.
-
-	for (i = 0; i < m; i++)
-	{
-		scanf("%d %d", &l, &r);
-		printf("%d\n", SparseTableQuery(l, r));
+	int **ST = (int**)malloc(length * sizeof(int*));
+	for (int i = 0; i < length; i++){
+		ST[i] = (int*)malloc(mm * sizeof(int));
 	}
-    for (int i = 0; i < n; i++){
-        free(table[i]);
-    }
-	free(table);
+
+	Sparse_Table_build(arr, lg, length, ST);
 	free(arr);
-	arr = NULL;
 
-	//getchar(); getchar();
-	return 0;
+	scanf("%d", &m);
+		int *answer=(int*)malloc(m * sizeof(int));
+	for(int i = 0; i < m; i++){
+		scanf("%d %d", &l, &r);
+		answer[i] = Sparce_Table_Query(l, r, lg, ST);
+	}
+	for(int i = 0; i < m; i++)
+		printf("%d\n", answer[i]);
+
+	free(answer);
+	for (int i = 0; i < length; i++)
+		free(ST[i]);
+	free(ST);
+	free(lg);
+    return 0;
 }

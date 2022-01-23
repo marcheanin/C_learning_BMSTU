@@ -1,110 +1,65 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include <string.h>
-#define STR_LEN 1000
+#include <ctype.h>
 
-typedef struct Elem
-{
+struct Elem {
 	struct Elem *next;
 	char *word;
-} t_elem;
-
-int Compare(t_elem *el)
-{
-	if (strlen(el->word) == strlen(el->next->word))
-		return 0;
-
-	return (strlen(el->word) > strlen(el->next->word)) ? 1 : -1;
-}
-
-void Swap(t_elem *first)
-{
-	t_elem *second = first->next;
-	char *tmp = first->word;
-	first->word = second->word;
-	second->word = tmp;
-}
-
+};
 struct Elem *bsort(struct Elem *list)
 {
-	t_elem *i, *n = list->next;
-	int swap = 0;
-
-	while (n->next != NULL)
-		n = n->next;
-
-	do
+	if (list == NULL) goto done;
+	struct Elem * alist = list;
+	while(1)
 	{
-		swap = 0;
-
-		for (i = list->next; i != n; i = i->next)
-			if (Compare(i) == 1)
+		long i = 0;
+		struct Elem *palist = alist;
+		while(palist->next != NULL)
+		{
+			if (strlen(palist->word) > strlen(palist->next->word))
 			{
-				Swap(i);
-				swap = 1;
+				char *c = palist->word;
+				palist->word = palist->next->word;
+				palist->next->word = c;
+				i++;
 			}
-
-		n = i;
-	} while (swap == 1);
-
+			palist = palist->next;
+		}
+		if (i == 0) goto done;
+	}
+done:;
 	return list;
 }
-
-t_elem* ElemInit(char *w)
-{
-	int len = strlen(w);
-
-	if (len && w[len - 1] == '\n')
-		w[--len] = '\0';
-
-	t_elem *el;
-	el = (t_elem*)malloc(sizeof(t_elem));
-	el->next = NULL;
-	el->word = (char*)calloc(len + 1, sizeof(char));
-	strcpy(el->word, w);
-
-	return el;
-}
-
 int main()
 {
-	char src[STR_LEN] = { 0 };
-	fgets(src, STR_LEN - 1, stdin);
-
-	t_elem *head, *el1, *el2;
-	head = el1 = el2 = NULL;
-	head = ElemInit("");
-	el1 = head;
-
-	char sep[2] = { ' ' };
-	char *istr = strtok(src, sep);
-	while (istr != NULL)
+	char str[1000];
+	gets(str);
+	struct Elem * pl = NULL;
+	char del[1000] = " ";
+	char *word = strtok(str, del);
+	struct Elem * fl;
+	while (word != NULL)
 	{
-		el2 = ElemInit(istr);
-		el1->next = el2;
-		el1 = el2;
-		istr = strtok(NULL, sep);
+		struct Elem * list = malloc(sizeof(struct Elem));
+		list->word = word;
+		if (pl != NULL)
+		{
+			pl->next = list;
+		}
+		else fl = list;
+		pl = list;
+		word = strtok(NULL, del);
 	}
-
-	bsort(head);
-
-	el1 = head->next;
-	while (el1 != NULL)
+	if (pl != NULL) pl->next = NULL;
+	fl = bsort(fl);
+	struct Elem * list = fl;
+	while(list != NULL)
 	{
-		printf("%s ", el1->word);
-		el2 = el1->next;
-
-		el1->next = NULL;
-		free(el1->word);
-		free(el1);
-
-		el1 = el2;
+		puts(list->word);
+		struct Elem * c = list;
+		list = list->next;
+		free(c);
 	}
-	head->next = NULL;
-	free(head->word);
-	free(head);
-
-	getchar(); getchar();
 	return 0;
 }

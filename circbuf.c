@@ -1,94 +1,101 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-struct Queue
+typedef struct	s_buffer
 {
-	long *data;
-	size_t cnt, cap, head, tail;
-} q;
+	int		*arr;
+	size_t	size;
+	size_t	count_elements;
+	size_t	head;
+	size_t	tail;
+}				t_buffer;
 
-void InitQueue(size_t n)
+void init_queue(t_buffer *buffer, size_t size)
 {
-	q.data = (long *)calloc(n, sizeof(long));
-	q.cnt = 0;
-	q.cap = n;
-	q.head = 0;
-	q.tail = 0;
+	buffer->arr = (int *)calloc(size + 1, sizeof(int));
+	buffer->size = size;
 }
 
-size_t QueueEmpty()
+void queue_empty(t_buffer *buffer)
 {
-	return q.cnt == 0 ? 1 : 0;
+	if (buffer->tail == buffer->head)
+		printf("true\n");
+	else
+		printf("false\n");
 }
 
-long Dequeue()
+void print_buffer(t_buffer *buffer)
 {
-	long ret = q.data[q.head++];
-	q.cnt--;
-
-	if (q.head == q.cap)
-		q.head = 0;
-
-	return ret;
+	for(int i = 0; i < buffer->size; i++)
+		printf("%d ", buffer->arr[i]);
+	printf("\n");
 }
 
-void Enqueue(long value)
+void resize(t_buffer *buffer)
 {
-	size_t j = 0;
-
-	if (q.cnt == q.cap)
+	//if (buffer->size == 0)
+	size_t size = buffer->size * 2;
+	int *new_arr = (int *)calloc(size, sizeof(int));
+	int head = buffer->head;
+	int i = 0;
+	for(i = 0; i < buffer->size; i++)
 	{
-		q.data = (long *)realloc(q.data, 2 * q.cap * sizeof(long));
-
-		for (j = 0; j < q.tail; j++)
-			q.data[q.cap + j] = q.data[j];
-
-		q.tail = q.cap + j;
-		q.cap *= 2;
+		new_arr[i] = buffer->arr[head];
+		head++;
+		head = head % buffer->size;
 	}
-
-	q.data[q.tail++] = value;
-	q.cnt++;
-
-	if (q.tail == q.cap)
-		q.tail = 0;
+	buffer->head = 0;
+	buffer->tail = i;
+	buffer->size = size;
+	free(buffer->arr);
+	buffer->arr = new_arr;
 }
 
-int main()
+int dequeue(t_buffer *buffer)
 {
-	InitQueue(4);
+	int elem = buffer->arr[buffer->head];
+	buffer->arr[buffer->head] = 0;
+	buffer->head++;
+	buffer->head = buffer->head % buffer->size;
+	return elem;
+}
 
-	char cmd[6] = { 0 };
-	long arg = 0;
+void enqueue(t_buffer *buffer, int x)
+{
+	buffer->arr[buffer->tail] = x;
+	buffer->tail++;
+	buffer->tail = buffer->tail % buffer->size;
+	if (buffer->head == buffer->tail)
+		resize(buffer);
+	buffer->count_elements++;
+}
 
-	size_t n = 0, i = 0, ti = 0;
-	scanf("%u", &n);
-
-	long *result = (long*)calloc(n, sizeof(long));
-
-	for (i = 0; i < n; i++)
+int main(void)
+{
+	const int len = 10;
+	t_buffer buffer;
+	size_t count_operation = 0;;
+	char operation[len];
+	memset(&buffer, 0, sizeof(t_buffer));
+	init_queue(&buffer, 4);
+	scanf("%zu", &count_operation);
+	for (int i = 0; i < count_operation; i++)
 	{
-		scanf("%s", cmd);
-
-		if (strcmp(cmd, "ENQ") == 0)
+		memset(operation, 0 , len);
+		scanf("%s", operation);
+		if (!strcmp(operation, "ENQ"))
 		{
-			scanf("%li", &arg);
-			Enqueue(arg);
+			int x = 0;
+			scanf("%d", &x);
+			enqueue(&buffer, x);
 		}
-		else if (strcmp(cmd, "DEQ") == 0) result[ti++] = Dequeue();
-		else if (strcmp(cmd, "EMPTY") == 0) result[ti++] = QueueEmpty() ? 2000000000 : 2000000001;
-		else return 1;
+		else if (!strcmp(operation, "DEQ"))
+			printf("%d\n",dequeue(&buffer));
+		else if (!strcmp(operation, "EMPTY"))
+			queue_empty(&buffer);
+		//print_buffer(&buffer);
 	}
-
-	for (i = 0; i < ti; i++)
-		if (result[i] >= 2000000000)
-			printf("%s\n", result[i] == 2000000000 ? "true" : "false");
-		else
-			printf("%li\n", result[i]);
-
-	free(q.data);
-	free(result);
+	free(buffer.arr);
 	return 0;
 }

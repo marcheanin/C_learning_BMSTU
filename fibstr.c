@@ -19,8 +19,8 @@ char *fibstr(int n){
     strcpy(c, "");
     strcat(c, a);
     strcat(c, b);
+    free(a), free(b);
     return c;
-    free(c);
 }
 
 int main(){

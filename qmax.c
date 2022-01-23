@@ -1,94 +1,138 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define STACKSIZE 150000
 
-struct Queue
-{
-	long *data;
-	size_t cnt, cap, head, tail;
-} q;
+typedef struct {
+        int x, max;
+} elem_t;
 
-void InitQueue(size_t n)
+typedef struct {
+        elem_t* data;
+        int cap,  top1, top2;
+} doubleStack_t;
+
+doubleStack_t initDoubleStack(int n)
 {
-	q.data = (long *)calloc(n, sizeof(long));
-	q.cnt = 0;
-	q.cap = n;
-	q.head = 0;
-	q.tail = 0;
+        doubleStack_t s;
+        s.data = (elem_t*)malloc(n * sizeof(elem_t));
+        s.cap = n;
+        s.top1 = 0;
+        s.top2 = n - 1;
+        return s;
 }
 
-size_t QueueEmpty()
+char stackEmpty1(doubleStack_t s)
 {
-	return q.cnt == 0 ? 1 : 0;
+        return s.top1 == 0;
 }
 
-long Dequeue()
+char stackEmpty2(doubleStack_t s)
 {
-	long ret = q.data[q.head++];
-	q.cnt--;
-
-	if (q.head == q.cap)
-		q.head = 0;
-
-	return ret;
+        return s.top2 == s.cap - 1;
 }
 
-void Enqueue(long value)
+void push1(doubleStack_t *s, int x)
 {
-	size_t j = 0;
+        elem_t p = s->data[s->top1];
+        if(stackEmpty1(*s))
+                p.max = x;
+        else {
+                int prevmax = s->data[s->top1 - 1].max;
+                p.max = x > prevmax ? x : prevmax;
+        }
+        p.x = x;
+        s->data[s->top1] = p;
+        s->top1++;
+}
 
-	if (q.cnt == q.cap)
-	{
-		q.data = (long *)realloc(q.data, 2 * q.cap * sizeof(long));
+void push2(doubleStack_t *s, int x)
+{
+        elem_t p = s->data[s->top2];
+        if(stackEmpty2(*s))
+                p.max = x;
+        else {
+                int prevmax = s->data[s->top2 + 1].max;
+                p.max = x > prevmax ? x : prevmax;
+        }
+        p.x = x;
+        s->data[s->top2] = p;
+        s->top2--;
+}
 
-		for (j = 0; j < q.tail; j++)
-			q.data[q.cap + j] = q.data[j];
+elem_t pop1(doubleStack_t *s)
+{
+        s->top1--;
+        return s->data[s->top1];
+}
 
-		q.tail = q.cap + j;
-		q.cap *= 2;
-	}
+elem_t pop2(doubleStack_t *s)
+{
+        s->top2++;
+        return s->data[s->top2];
+}
 
-	q.data[q.tail++] = value;
-	q.cnt++;
+doubleStack_t initQueueOnStack(int n)
+{
+        return initDoubleStack(n);
+}
 
-	if (q.tail == q.cap)
-		q.tail = 0;
+char queueEmpty(doubleStack_t s)
+{
+        return stackEmpty1(s) && stackEmpty2(s);
+}
+
+void enqueue(doubleStack_t *s, int x)
+{
+        push1(s, x);
+}
+
+elem_t dequeue(doubleStack_t *s)
+{
+        if(stackEmpty2(*s))
+                while(!stackEmpty1(*s))
+                        push2(s, pop1(s).x);
+        return pop2(s);
+}
+
+int max(int a, int b)
+{
+        return a > b ? a : b;
 }
 
 int main()
 {
-	InitQueue(4);
-
-	char cmd[6] = { 0 };
-	long arg = 0;
-
-	size_t n = 0, i = 0, ti = 0;
-	scanf("%u", &n);
-
-	long *result = (long*)calloc(n, sizeof(long));
-
-	for (i = 0; i < n; i++)
-	{
-		scanf("%s", cmd);
-
-		if (strcmp(cmd, "ENQ") == 0)
-		{
-			scanf("%li", &arg);
-			Enqueue(arg);
-		}
-		else if (strcmp(cmd, "DEQ") == 0) result[ti++] = Dequeue();
-		else if (strcmp(cmd, "EMPTY") == 0) result[ti++] = QueueEmpty() ? 2000000000 : 2000000001;
-		else return 1;
-	}
-
-	for (i = 0; i < ti; i++)
-		if (result[i] >= 2000000000)
-			printf("%s\n", result[i] == 2000000000 ? "true" : "false");
-		else
-			printf("%li\n", result[i]);
-
-	free(q.data);
-	free(result);
-	return 0;
+        int n, i, j;
+        scanf("%u", &n);
+        doubleStack_t q = initQueueOnStack(STACKSIZE);
+        for(i = 0; i < n; i++) {
+                char s[6];
+                scanf("%s", s);
+                if(!strcmp("ENQ", s)) {
+                        int x;
+                        scanf("%d", &x);
+                        enqueue(&q, x);
+                        continue;
+                }
+                if(!strcmp("DEQ", s)) {
+                        printf("%d\n", dequeue(&q).x);
+                        continue;
+                }
+                if(!strcmp("EMPTY", s)) {
+                        if(queueEmpty(q)) printf("true\n");
+                        else printf("false\n");
+                        continue;
+                }
+                if(!strcmp("MAX", s)) {
+                        if(stackEmpty2(q)) {
+                                printf("%d\n", q.data[q.top1 - 1].max);
+                                continue;
+                        }
+                        if(!stackEmpty1(q) && !stackEmpty2(q))
+                                printf("%d\n", max(q.data[q.top1 - 1].max, q.data[q.top2 + 1].max));
+                        else
+                                printf("%d\n", q.data[q.top2 + 1].max);
+                }
+        }
+        free(q.data);
 }

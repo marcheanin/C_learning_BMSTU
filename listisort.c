@@ -1,82 +1,71 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
-#define alloc_elem (t_elem*)malloc(sizeof(t_elem))
 
-typedef struct Elem
-{
-	struct Elem *prev, *next;
-	int v;
-} t_elem;
+typedef struct Elem {
+    struct Elem *prev, *next;
+    int v;
+} elem_t;
 
-void Insert(t_elem *first, t_elem *second)
+elem_t* initDoubleLinkedList()
 {
-	t_elem *third;
-	third = first->next;
-	first->next = second;
-	second->prev = first;
-	second->next = third;
-	third->prev = second;
+        elem_t* l = calloc(1, sizeof(elem_t));
+	l->prev = l;
+	l->next = l;
+	return l;
 }
 
-void Delete(t_elem *first)
+void insertAfter(elem_t* x, elem_t* y)
 {
-	t_elem *second, *third;
-	second = first->prev;
-	third = first->next;
-	second->next = third;
-	third->prev = second;
-	first->prev = first->next = NULL;
+	elem_t* z = x->next;
+	x->next = y;
+	y->prev = x;
+	y->next = z;
+	z->prev = y;
 }
 
-void InsertionSort(t_elem *head)
+void delete(elem_t* x)
 {
-	t_elem *i, *location;
-	i = head->next;
+	elem_t *y, *z;
+	y = x->prev;
+	z = x->next;
+	y->next = z;
+	z->prev = y;
+	x->prev = NULL;
+	x->next = NULL;
+}
 
-	while (i != head)
-	{
-		location = i->prev;
-
-		while ((location != head) && (location->v > i->v))
-			location = location->prev;
-
-		Delete(i);
-		Insert(location, i);
-		i = i->next;
+void insertSort(elem_t* list)
+{
+	elem_t* el = list->next, *loc = el->prev;
+        while(el != list) {
+		while(loc!=list && el->v < loc->v)
+			loc = loc->prev;
+		delete(el);
+		insertAfter(loc, el);
+		el = el->next;
+		loc = el->prev;
 	}
 }
 
 int main()
 {
-	int n = 0, i = 0;
+	int i, n;
 	scanf("%d", &n);
-
-	t_elem *head, *e, *f;
-
-	head = alloc_elem;
-	head->next = head->prev = head;
-
-	for (i = 0; i < n; i++)
-	{
-		e = alloc_elem;
-		scanf("%d", &(e->v));
-		Insert(head, e);
+	elem_t* list = initDoubleLinkedList();
+	elem_t* a = malloc(n * sizeof(elem_t));
+	for(i = 0; i < n; i++) {
+		int v;
+		scanf("%d", &v);
+		a[i].v = v;
+		insertAfter(list->prev, &a[i]);
 	}
-
-	InsertionSort(head);
-	InsertionSort(head);
-
-	e = head->next;
-	while (e != head)
-	{
-		printf("%d ", e->v);
-		f = e;
-		e = e->next;
-		free(f);
+	insertSort(list);
+	elem_t* el = list->next;
+	while(el != list) {
+		printf("%d ", el->v);
+		el = el->next;
 	}
-	free(e);
-
-	getchar(); getchar();
+	free(a);
+	free(list);
 	return 0;
 }

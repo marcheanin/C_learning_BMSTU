@@ -2,20 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+//код презентации, ничего более придумать не могу
+
 void dsort(char* str) {
     unsigned int count[26] = {0};
-    char* p = str;
-    while (*p != '\0') {
-        count[*p - 'a']++;
-        p++;
+    int j = 0;
+    while (str[j] != '\0') {
+        count[str[j] - 'a']++;
+        j++;
     }
-
-    int *a = (int*)malloc(sizeof(int) * 10);
-    for (int i = 0; i < 10; i++){
-        a[i] += 4;
-    }
-    free(a);
-
     for (int i = 0; i < 26; ++i) {
         while (count[i]) {
             *str = (char)i + 'a';

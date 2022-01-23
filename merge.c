@@ -1,175 +1,118 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct
-{
-	long val;
-	long arr_num;
-} pair;
+typedef struct {
+	int nel, ind;
+	int* value;
+} elem_t;
 
-struct Queue
-{
-	pair *heap;
-	size_t cnt, cap;
-} q;
+typedef struct {
+        elem_t* heap;
+	int cap, count;
+} queue_t;
 
-int Compare(size_t a, size_t b)
+queue_t initPriorityQueue(int n)
 {
-	if (q.heap[a].val == q.heap[b].val)
-		return 0;
-
-	return (q.heap[a].val > q.heap[b].val) ? 1 : -1;
-}
-
-void Swap(size_t a, size_t b)
-{
-	pair tmp = q.heap[a];
-	q.heap[a] = q.heap[b];
-	q.heap[b] = tmp;
-}
-
-void QueueInit(size_t n)
-{
-	q.heap = (pair *)malloc(n * sizeof(pair));
+	queue_t q;
+	q.heap = (elem_t*)malloc(n * sizeof(elem_t));
 	q.cap = n;
-	q.cnt = 0;
+	q.count = 0;
+	return q;
 }
 
-size_t Parent(size_t idx)
+void swap(elem_t *a, elem_t *b)
 {
-	return (idx - 1) >> 1;
+	elem_t c = *a;
+	*a = *b;
+	*b = c;
 }
 
-size_t ChildLeft(size_t idx)
+int compare(elem_t a, elem_t b)
 {
-	return (idx << 1) + 1;
+        return a.value[a.ind] > b.value[b.ind];
 }
 
-size_t ChildRight(size_t idx)
+void insert(queue_t *q, elem_t x)
 {
-	return (idx << 1) + 2;
-}
-
-void ShiftUp(size_t idx)
-{
-	while (idx && Compare(Parent(idx), idx) == 1)
-	{
-		Swap(Parent(idx), idx);
-		idx = Parent(idx);
+	int i = q->count;
+	q->count = i + 1;
+	q->heap[i] = x;
+	while(i > 0 && compare(q->heap[(i - 1)/2],q->heap[i])) {
+		swap(&(q->heap[(i - 1)/2]), &(q->heap[i]));
+		i = (i - 1)/2;
 	}
 }
 
-void ShiftDown()
+void heapify(elem_t *base, int nel, int i,
+        int (*compare)(elem_t a, elem_t b))
 {
-	size_t idx = 0, idx_min = 0, left = 0, right = 0;
-
-	while (1)
-	{
-		idx = idx_min;
-		left = ChildLeft(idx);
-		right = ChildRight(idx);
-
-		if (left <= q.cnt && Compare(idx_min, left) == 1)
-			idx_min = left;
-
-		if (right <= q.cnt && Compare(idx_min, right) == 1)
-			idx_min = right;
-
-		if (idx_min == idx)
-			break;
-
-		Swap(idx, idx_min);
-	}
+        int l, r, j;
+        for(;;) {
+                l = 2 * i + 1, r = l + 1, j = i;
+                if(l < nel && compare(base[i], base[l])) i = l;
+                if(r < nel && compare(base[i], base[r])) i = r;
+                if (i == j) break;
+                swap(&base[i], &base[j]);
+        }
 }
 
-void QueueInsert(pair element)
+elem_t extraxtMax(queue_t *q)
 {
-	q.heap[q.cnt] = element;
-	ShiftUp(q.cnt);
-	q.cnt++;
+	elem_t x = q->heap[0];
+	q->count--;
+	if(q->count > 0) {
+		q->heap[0] = q->heap[q->count];
+		heapify(q->heap, q->count, 0, compare);
+	}
+	return x;
 }
 
-void ExtractMin(pair *element)
+char queueEmpty(queue_t q)
 {
-	element->arr_num = q.heap[0].arr_num;
-	element->val = q.heap[0].val;
-	q.cnt--;
-
-	if (q.cnt)
-	{
-		q.heap[0] = q.heap[q.cnt];
-		ShiftDown();
-	}
-}
-
-void QueueProcess(size_t *arrs_len, long **arrs)
-{
-	size_t i = 0, count = 0;
-	pair element;
-
-	for (i = 0; i < q.cap; i++)
-	{
-		element.val = arrs[i][0];
-		element.arr_num = i;
-		QueueInsert(element);
-		count += arrs_len[i];
-	}
-
-	for (i = 0; i < count; i++)
-	{
-		ExtractMin(&element);
-		printf("%li ", element.val);
-
-		arrs_len[element.arr_num]--;
-		if (arrs_len[element.arr_num])
-		{
-			++arrs[element.arr_num];
-			element.val = *arrs[element.arr_num];
-			QueueInsert(element);
-		}
-	}
+	return q.count == 0;
 }
 
 int main()
 {
-	size_t kt = 0, k = 0, i = 0, j = 0, arr_len = 0, summ = 0;
-	scanf("%u", &kt);
-
-	size_t *arrs_len = malloc(kt * sizeof(size_t));
-
-	for (i = 0; i < kt; i++)
-	{
-		scanf("%u", &arr_len);
-
-		if (arr_len)
-		{
-			summ += arr_len;
-			arrs_len[k++] = arr_len;
+	unsigned int k, i, j, n = 0;
+	scanf("%d", &k);
+	int** arr = (int**)malloc(k * sizeof(int*));
+	unsigned int* lens = (unsigned int*)malloc(k * sizeof(unsigned int));
+	for(i = 0; i < k; i++) {
+		scanf("%d", &lens[i]);
+		n += lens[i];
+	}
+	for(i = 0; i < k; i++) {
+		if(!lens[i])
+			continue;
+		arr[i] = (int*)malloc(lens[i] * sizeof(int));
+		for(j = 0; j < lens[i]; j++)
+			scanf("%d", &(arr[i][j]));
+	}
+	queue_t q = initPriorityQueue(k);
+	for(i = 0; i < k; i++) {
+		if(!lens[i])
+			continue;
+		elem_t x;
+		x.nel = lens[i];
+		x.value = arr[i];
+		x.ind = 0;
+		insert(&q, x);
+	}
+	while(!queueEmpty(q)) {
+		elem_t temp = extraxtMax(&q);
+		printf("%d ", temp.value[temp.ind]);
+		int ind = ++temp.ind;
+		if(ind < temp.nel) {
+			temp.value[temp.ind] = temp.value[ind];
+			insert(&q, temp);
 		}
 	}
-
-	long **arrs = (long **)malloc(k * sizeof(long *) + summ * sizeof(long));
-
-	for (i = 0; i < k; i++)
-	{
-		arr_len = arrs_len[i];
-
-		if (i == 0)
-			arrs[i] = (long *)(arrs + k);
-		else
-			arrs[i] = (long *)(arrs[i - 1] + arrs_len[i - 1]);
-
-		for (j = 0; j < arrs_len[i]; j++)
-			scanf("%li", arrs[i] + j);
-	}
-
-	QueueInit(k);
-	QueueProcess(arrs_len, arrs);
-
-	free(arrs_len);
-	free(arrs);
+	printf("\n");
 	free(q.heap);
-
+	for(i = 0; i < k; i++)
+        	if(lens[i]) free(arr[i]);
+	free(arr);
+	free(lens);
 	return 0;
 }

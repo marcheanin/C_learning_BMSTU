@@ -1,55 +1,44 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 
-char iter(char *s, char *t, int len_s, int i) {
-    if (i < len_s)
-        return s[i];
-    return t[i - len_s - 1];
-}
-
-// Symbol on len_s index is not equal to any other
-int comp(char *s, char *t, int len_s, int i, int j) {
-    return i != len_s && j != len_s && iter(s, t, len_s, i) == iter(s, t, len_s, j);
-}
-
-int *prefix_function (char *s, char *t, int len_s, int n) {
-	int *pi = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) pi[i] = 0;
-	for (int i = 1; i < n; i++) {
-		int j = pi[i - 1];
-		while (j > 0 && !comp(s, t, len_s, i, j))
-			j = pi[j - 1];
-		if (comp(s, t, len_s, i, j))  j++;
-		pi[i] = j;
+long KMP_Subst(char *s, char *t, long *P, long len_S, long len_T){
+	long q = 0, k = 0;
+	while (k < len_T) {
+		while ( (q > 0) && (s[q] != t[k]) )
+			q = P[q - 1];
+		if (s[q] == t[k])
+			q++;
+		if (q == 0){
+			k = k - len_S + 3;
+			return k;
+		}
+		k++;
 	}
-	return pi;
+	return 0;
 }
 
-int main(int argc, char **argv) {
-    char *s = argv[1];
-    char *t = argv[2];
+void Prefix(char *s, long *P, long length){
+	P[0] = 0;
+	long t = 0, i = 1;
+	while (i < length){
+		while( (t > 0) && (s[t] != s[i]) )
+			t = P[t-1];
+		if (s[t] == s[i])
+			t++;
+		P[i] = t;
+		i++;
+	}
+}
 
-    int len_s = strlen(s);
-        len_s = strlen(s);
-    int len_t = strlen(t);
-
-    int len = len_s + len_t + 1;
-    int *pref = prefix_function(s, t, len_s, len);
-    pref = prefix_function(s, t, len_s, len);
-
-    int is_pref = 1;
-    for (int i = len - 1; i > len_s;) {
-        if (pref[i] == 0){
-            is_pref = 0;
-            break;
-        }
-        i -= pref[i];
-    }
-
-    printf(is_pref ? "yes" : "no");
-
-    free(pref);
-
-    return 0;
+int main(int argc, char **argv){
+	long length_1 = strlen(argv[1]);
+	long length_2 = strlen(argv[2]);
+	long P[length_1];
+	Prefix(argv[1], P, length_1);
+	if (KMP_Subst(argv[1], argv[2], P, length_1, length_2) == 0)
+		printf("yes\n");
+	else
+		printf("no\n");
+	return 0;
 }

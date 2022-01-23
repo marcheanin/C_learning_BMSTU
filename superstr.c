@@ -3,25 +3,35 @@
 #include <string.h>
 
 char *substring(char *string, int position, int length){
-   char *p = malloc(length + 1);
+   char *p = malloc(length + 5);
    int c;
 
    for (c = 0; c < length; c++){
       *(p + c) = *(string + position);
-      string++;
+        string++;
    }
    *(p + c) = '\0';
    return p;
 
 }
 
+char* substring1(char *s, int a, int b)
+{
+    char *t = (char*)malloc(b + 1);
+    strncpy(t, s+a, b);
+    t[b] = '\0';
+    return t;
+}
+
+
 int count_diff(char *a, char *b){
     int n = strlen(a), m = strlen(b);
+    if (m == 0 && n == 0) return 0;
     if (m == 0 || n == 0) return m;
     int len = 0;
     for (int i = n - 1, j = 0; i >= 0, j < m; i--, j++){
-            char *left = substring(a, i, n - i);
-            char *right = substring(b, 0, j + 1);
+            char *left = substring1(a, i, n - i);
+            char *right = substring1(b, 0, j + 1);
         if(strcmp(left, right) == 0){
             len = j + 1;
         }
@@ -60,7 +70,7 @@ int main(){
     char **s;
     s = (char**)malloc(n * sizeof(char*));
     for (int i = 0; i < n; i++){
-        s[i] = (char*)malloc(700 * sizeof(char));
+        s[i] = (char*)malloc(1000 * sizeof(char));
         scanf("%s", s[i]);
     }
     int diffs[10][10];
@@ -75,7 +85,7 @@ int main(){
         //printf("\n");
     }
 
-    int used[10] = {};
+    int used[50] = {0};
     per(diffs, used, 0, 0, n, -1);
     printf("%ld", res);
 
